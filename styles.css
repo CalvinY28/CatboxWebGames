@@ -111,6 +111,37 @@ a:focus-visible {
   transform: translateY(-2px);
 }
 
+.slot-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.slot-icon {
+  display: grid;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1.5px solid rgba(23, 23, 23, 0.16);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 2px 0 rgba(23, 23, 23, 0.07);
+  transition: transform 170ms ease, background-color 170ms ease;
+}
+
+.slot-icon svg {
+  width: 1.65rem;
+  height: 1.65rem;
+}
+
+.game-slot:hover .slot-icon,
+.game-slot:target .slot-icon {
+  transform: rotate(5deg) scale(1.06);
+  background: rgba(255, 255, 255, 0.65);
+}
+
 .game-slot-coral { background: #ff6b55; }
 .game-slot-yellow { background: #f4cf4f; }
 .game-slot-blue { background: #6fa8ff; }
@@ -289,4 +320,5 @@ a:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .game-slot { transition: none; }
+  .slot-icon { transition: none; }
 }
