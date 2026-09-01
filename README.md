@@ -2,16 +2,6 @@
 
 Source code for [catbox.party](https://catbox.party), a collection of homemade browser games.
 
-## Make your own changes
-
-You can edit files directly on GitHub by opening a file and selecting the pencil icon.
-
-- `index.html` contains the homepage title, description, game boxes, and footer text.
-- `styles.css` controls the colors, spacing, fonts, and responsive layout.
-- `privacy/index.html` contains the privacy policy.
-
-Commit changes to the `main` branch when you are ready to publish them. Once the Cloudflare connection is complete, every commit to `main` will be deployed automatically.
-
 ## Add a game
 
 1. Create a folder for the game, such as `games/tic-tac-toe/`.
