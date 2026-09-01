@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://catbox-web-games.sites.chatgpt.com"),
+  metadataBase: new URL("https://catbox-web-games.catvan.chatgpt.site"),
   title: "Catbox Games — Tiny games, big rematches",
   description: "Play homemade browser classics including Tic-Tac-Toe, Connect Four, and Pocket Fleet. Free, instant, and built for quick rematches.",
   openGraph: {
