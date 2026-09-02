@@ -35,6 +35,107 @@
   box-shadow: 0 14px 40px rgba(23, 23, 23, 0.08);
 }
 
+.ttt-mode-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding: 0.35rem;
+  border-radius: 1rem;
+  background: #f0efeb;
+}
+
+.ttt-mode-button {
+  min-height: 2.9rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ttt-mode-button.is-active {
+  background: #fff;
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(23, 23, 23, 0.08);
+}
+
+.ttt-online-panel {
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: #f7f7f5;
+}
+
+.ttt-online-panel[hidden] {
+  display: none;
+}
+
+.ttt-connection-status {
+  margin: 0 0 0.9rem;
+  font-weight: 800;
+}
+
+.ttt-invite-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ttt-invite-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+}
+
+.ttt-invite-row input {
+  min-width: 0;
+  min-height: 2.9rem;
+  padding: 0 0.8rem;
+  border: 1px solid #d8d7d2;
+  border-radius: 0.75rem;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.ttt-invite-row button,
+.ttt-new-room {
+  min-height: 2.9rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: #171717;
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ttt-invite-row button {
+  padding: 0 1rem;
+}
+
+.ttt-new-room {
+  width: 100%;
+  margin-top: 0.6rem;
+  background: #deddd8;
+  color: var(--text);
+}
+
+.ttt-online-note {
+  margin: 0.7rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .ttt-status {
   margin: 0 0 1.25rem;
   font-size: 1.1rem;
@@ -70,7 +171,11 @@
 }
 
 .ttt-cell:focus-visible,
-.ttt-reset:focus-visible {
+.ttt-mode-button:focus-visible,
+.ttt-invite-row button:focus-visible,
+.ttt-new-room:focus-visible,
+.ttt-reset:focus-visible,
+.ttt-invite-row input:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 4px;
 }
@@ -107,8 +212,13 @@
   cursor: pointer;
 }
 
-.ttt-reset:hover {
+.ttt-reset:hover,
+.ttt-invite-row button:hover {
   background: #343434;
+}
+
+.ttt-new-room:hover {
+  background: #d1d0ca;
 }
 
 @media (max-width: 560px) {
