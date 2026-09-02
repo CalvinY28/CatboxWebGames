@@ -100,9 +100,14 @@ function renderBoard() {
   }
 }
 
-function resetBoard() {
+function getNextStartingPlayer() {
+  if (!winningLine) return "X";
+  return board[winningLine[0]];
+}
+
+function resetBoard(startingPlayer = "X") {
   board = Array(9).fill("");
-  currentPlayer = "X";
+  currentPlayer = startingPlayer;
   gameFinished = false;
   winningLine = null;
   movePending = false;
@@ -295,7 +300,7 @@ function handleGameMessage(event) {
     if (message.type === "move" && applyMove(message.index, "O")) {
       sendState();
     } else if (message.type === "reset") {
-      resetBoard();
+      resetBoard(getNextStartingPlayer());
       sendState();
     }
     return;
@@ -553,10 +558,10 @@ function playTurn(event) {
 
 function restartGame() {
   if (mode === "local") {
-    resetBoard();
+    resetBoard(getNextStartingPlayer());
     cells[0].focus();
   } else if (myPlayer === "X" && peerConnected) {
-    resetBoard();
+    resetBoard(getNextStartingPlayer());
     sendState();
   } else if (myPlayer === "O" && peerConnected && sendGameMessage({ type: "reset" })) {
     movePending = true;
