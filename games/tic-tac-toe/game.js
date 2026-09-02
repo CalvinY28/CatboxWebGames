@@ -225,6 +225,13 @@ function sendSignal(type, payload) {
   signalingSocket.send(JSON.stringify({ type: type, payload: payload }));
 }
 
+function serializeSessionDescription(description) {
+  return {
+    type: description.type,
+    sdp: description.sdp,
+  };
+}
+
 function sendGameMessage(message) {
   if (!dataChannel || dataChannel.readyState !== "open") return false;
   dataChannel.send(JSON.stringify(message));
@@ -325,7 +332,13 @@ async function createPeerConnection(generation) {
   peerConnection = connection;
 
   connection.onicecandidate = function (event) {
-    if (event.candidate) sendSignal("ice-candidate", event.candidate.toJSON());
+    if (!event.candidate) return;
+    sendSignal("ice-candidate", {
+      candidate: event.candidate.candidate,
+      sdpMid: event.candidate.sdpMid,
+      sdpMLineIndex: event.candidate.sdpMLineIndex,
+      usernameFragment: event.candidate.usernameFragment,
+    });
   };
 
   connection.onconnectionstatechange = function () {
@@ -366,7 +379,7 @@ async function startOffer(generation) {
   configureDataChannel(connection.createDataChannel("catbox-game"), generation);
   const offer = await connection.createOffer();
   await connection.setLocalDescription(offer);
-  sendSignal("offer", connection.localDescription.toJSON());
+  sendSignal("offer", serializeSessionDescription(connection.localDescription));
 }
 
 async function acceptOffer(offer, generation) {
@@ -377,7 +390,7 @@ async function acceptOffer(offer, generation) {
   await addPendingIceCandidates();
   const answer = await connection.createAnswer();
   await connection.setLocalDescription(answer);
-  sendSignal("answer", connection.localDescription.toJSON());
+  sendSignal("answer", serializeSessionDescription(connection.localDescription));
 }
 
 async function acceptAnswer(answer, generation) {
@@ -392,7 +405,11 @@ async function acceptIceCandidate(candidate) {
     pendingIceCandidates.push(candidate);
     return;
   }
-  await peerConnection.addIceCandidate(candidate);
+  try {
+    await peerConnection.addIceCandidate(candidate);
+  } catch (error) {
+    console.warn("Ignoring an incompatible ICE candidate", error);
+  }
 }
 
 async function handleSignalMessage(event, generation) {
@@ -431,8 +448,9 @@ async function handleSignalMessage(event, generation) {
       connectionStatus.textContent = "This room already has two players.";
     }
   } catch (error) {
+    console.error("WebRTC negotiation failed", error);
     closePeerConnection();
-    connectionStatus.textContent = "The peer connection could not be created.";
+    connectionStatus.textContent = "The peer connection could not be created. Please create a new link and try again.";
   }
 }
 
