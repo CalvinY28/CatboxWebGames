@@ -1,0 +1,129 @@
+.ttt-page {
+  width: min(680px, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 3rem 0 clamp(6rem, 12vw, 9rem);
+}
+
+.ttt-header {
+  padding: clamp(4rem, 10vw, 6.5rem) 0 2.75rem;
+  text-align: center;
+}
+
+.ttt-header h1 {
+  margin: 0;
+  font-size: clamp(3.2rem, 10vw, 6rem);
+  font-weight: 900;
+  letter-spacing: -0.075em;
+  line-height: 0.94;
+}
+
+.ttt-header > p:last-child {
+  max-width: 520px;
+  margin: 1.35rem auto 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.ttt-game {
+  width: min(100%, 500px);
+  margin: 0 auto;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid var(--line);
+  border-radius: 2rem;
+  background: #fff;
+  box-shadow: 0 14px 40px rgba(23, 23, 23, 0.08);
+}
+
+.ttt-status {
+  margin: 0 0 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.ttt-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.ttt-cell {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 2px solid #deded9;
+  border-radius: 1rem;
+  background: #f7f7f5;
+  color: var(--text);
+  font: inherit;
+  font-size: clamp(2.8rem, 12vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 120ms ease, background-color 120ms ease;
+}
+
+.ttt-cell:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #efeee9;
+}
+
+.ttt-cell:focus-visible,
+.ttt-reset:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+
+.ttt-cell:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.ttt-cell.cell-x {
+  color: #e34732;
+}
+
+.ttt-cell.cell-o {
+  color: #4c77c6;
+}
+
+.ttt-cell.cell-win {
+  background: #f4cf4f;
+  color: #171717;
+}
+
+.ttt-reset {
+  display: block;
+  width: 100%;
+  min-height: 3.4rem;
+  margin-top: 1rem;
+  border: 0;
+  border-radius: 1rem;
+  background: #171717;
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ttt-reset:hover {
+  background: #343434;
+}
+
+@media (max-width: 560px) {
+  .ttt-page {
+    width: calc(100% - 2rem);
+    padding-top: 2rem;
+  }
+
+  .ttt-header {
+    padding-top: 3.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ttt-cell {
+    transition: none;
+  }
+}

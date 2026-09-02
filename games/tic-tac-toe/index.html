@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Play local two-player Tic-Tac-Toe on Catbox Games." />
+    <title>Tic-Tac-Toe | Catbox Games</title>
+    <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="game.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <main class="ttt-page">
+        <a class="back-link" href="../../">Back to games</a>
+
+        <header class="ttt-header">
+          <p class="site-label">Local two-player game</p>
+          <h1>Tic-Tac-Toe</h1>
+          <p>Take turns placing X and O on the same device. Get three in a row to win.</p>
+        </header>
+
+        <section class="ttt-game" aria-labelledby="game-status">
+          <p id="game-status" class="ttt-status" role="status" aria-live="polite">Player X's turn</p>
+
+          <div class="ttt-board" role="grid" aria-label="Tic-Tac-Toe board">
+            <button class="ttt-cell" type="button" data-cell="0" data-label="Top left" aria-label="Top left, empty"></button>
+            <button class="ttt-cell" type="button" data-cell="1" data-label="Top middle" aria-label="Top middle, empty"></button>
+            <button class="ttt-cell" type="button" data-cell="2" data-label="Top right" aria-label="Top right, empty"></button>
+            <button class="ttt-cell" type="button" data-cell="3" data-label="Middle left" aria-label="Middle left, empty"></button>
+            <button class="ttt-cell" type="button" data-cell="4" data-label="Center" aria-label="Center, empty"></button>
+            <button class="ttt-cell" type="button" data-cell="5" data-label="Middle right" aria-label="Middle right, empty"></button>
+            <button class="ttt-cell" type="button" data-cell="6" data-label="Bottom left" aria-label="Bottom left, empty"></button>
+            <button class="ttt-cell" type="button" data-cell="7" data-label="Bottom middle" aria-label="Bottom middle, empty"></button>
+            <button class="ttt-cell" type="button" data-cell="8" data-label="Bottom right" aria-label="Bottom right, empty"></button>
+          </div>
+
+          <button class="ttt-reset" id="reset-game" type="button">Start over</button>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <nav aria-label="Footer navigation">
+          <a href="/privacy/">Privacy policy</a>
+          <a href="mailto:mail@catbox.party">Contact</a>
+          <a href="/tip/">Tip</a>
+        </nav>
+        <p>© 2027 Catbox Games. All rights reserved.</p>
+      </footer>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
