@@ -33,6 +33,7 @@ const confettiColors = ["#e34732", "#4c77c6", "#f4cf4f", "#50b987", "#a86add", "
 let mode = "local";
 let board = Array(9).fill("");
 let currentPlayer = "X";
+let roundStartingPlayer = "X";
 let gameFinished = false;
 let winningLine = null;
 let myPlayer = null;
@@ -105,9 +106,12 @@ function renderBoard() {
 }
 
 function getNextStartingPlayer() {
-  if (!winningLine) return "X";
-  const winner = board[winningLine[0]];
-  return winner === "X" ? "O" : "X";
+  if (winningLine) {
+    const winner = board[winningLine[0]];
+    return winner === "X" ? "O" : "X";
+  }
+  if (gameFinished) return roundStartingPlayer === "X" ? "O" : "X";
+  return "X";
 }
 
 function clearConfetti() {
@@ -159,6 +163,7 @@ function celebrateWinner() {
 function resetBoard(startingPlayer = "X") {
   board = Array(9).fill("");
   currentPlayer = startingPlayer;
+  roundStartingPlayer = startingPlayer;
   gameFinished = false;
   winningLine = null;
   movePending = false;
