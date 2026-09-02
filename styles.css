@@ -90,56 +90,14 @@ a:focus-visible {
   aspect-ratio: 1 / 0.86;
   min-height: 240px;
   flex-direction: column;
-  justify-content: space-between;
   overflow: hidden;
   padding: clamp(1.35rem, 3vw, 2rem);
   border: 2px solid rgba(23, 23, 23, 0.15);
   border-radius: var(--radius);
   box-shadow: 0 2px 0 rgba(23, 23, 23, 0.08);
   text-decoration: none;
-  transition: transform 170ms ease, box-shadow 170ms ease;
-  scroll-margin-top: 2rem;
-}
-
-.game-slot:hover,
-.game-slot:target {
-  transform: translateY(-6px);
-  box-shadow: 0 14px 30px rgba(23, 23, 23, 0.14);
-}
-
-.game-slot:active {
-  transform: translateY(-2px);
-}
-
-.slot-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.slot-icon {
-  display: grid;
-  width: 3.25rem;
-  height: 3.25rem;
-  flex: 0 0 auto;
-  place-items: center;
-  border: 1.5px solid rgba(23, 23, 23, 0.16);
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.45);
-  box-shadow: 0 2px 0 rgba(23, 23, 23, 0.07);
-  transition: transform 170ms ease, background-color 170ms ease;
-}
-
-.slot-icon svg {
-  width: 1.65rem;
-  height: 1.65rem;
-}
-
-.game-slot:hover .slot-icon,
-.game-slot:target .slot-icon {
-  transform: rotate(5deg) scale(1.06);
-  background: rgba(255, 255, 255, 0.65);
+  background-position: center;
+  background-size: cover;
 }
 
 .game-slot-coral { background: #ff6b55; }
@@ -148,29 +106,6 @@ a:focus-visible {
 .game-slot-green { background: #7fd09a; }
 .game-slot-pink { background: #f3a8c5; }
 .game-slot-purple { background: #ad95e8; }
-
-.slot-number {
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-}
-
-.slot-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-}
-
-.slot-copy strong {
-  font-size: clamp(1.45rem, 2.6vw, 2.1rem);
-  letter-spacing: -0.045em;
-  line-height: 1;
-}
-
-.slot-copy span {
-  font-size: 0.95rem;
-  font-weight: 600;
-}
 
 .closing-note {
   width: min(720px, calc(100% - 3rem));
@@ -495,6 +430,4 @@ a:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .game-slot { transition: none; }
-  .slot-icon { transition: none; }
 }
