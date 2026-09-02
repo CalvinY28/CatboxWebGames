@@ -8,6 +8,7 @@ const connectionStatus = document.querySelector("#connection-status");
 const inviteLink = document.querySelector("#invite-link");
 const copyInviteButton = document.querySelector("#copy-invite");
 const newRoomButton = document.querySelector("#new-room");
+const confettiLayer = document.querySelector("#confetti");
 
 const winningLines = [
   [0, 1, 2],
@@ -27,6 +28,7 @@ const signalingHttpOrigin = isLocalDevelopment
 const signalingWebSocketOrigin = signalingHttpOrigin.replace(/^http/, "ws");
 const fallbackIceServers = [{ urls: "stun:stun.cloudflare.com:3478" }];
 const webRtcSupported = typeof window.RTCPeerConnection === "function";
+const confettiColors = ["#e34732", "#4c77c6", "#f4cf4f", "#50b987", "#a86add", "#ff8c42"];
 
 let mode = "local";
 let board = Array(9).fill("");
@@ -44,6 +46,8 @@ let pendingIceCandidates = [];
 let iceServersPromise = Promise.resolve(fallbackIceServers);
 let connectionGeneration = 0;
 let transportMode = "pending";
+let celebratedWinner = null;
+let confettiTimer = null;
 
 function findWinningLine() {
   return winningLines.find(function (line) {
@@ -106,12 +110,59 @@ function getNextStartingPlayer() {
   return winner === "X" ? "O" : "X";
 }
 
+function clearConfetti() {
+  if (confettiTimer) {
+    window.clearTimeout(confettiTimer);
+    confettiTimer = null;
+  }
+  confettiLayer.replaceChildren();
+}
+
+function resetCelebration() {
+  celebratedWinner = null;
+  clearConfetti();
+}
+
+function celebrateWinner() {
+  if (!winningLine) return;
+  const winner = board[winningLine[0]];
+  if (celebratedWinner === winner) return;
+  celebratedWinner = winner;
+
+  const winnerShouldCelebrate = mode === "local" || winner === myPlayer;
+  const reducedMotion = window.matchMedia
+    && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!winnerShouldCelebrate || reducedMotion) return;
+
+  clearConfetti();
+  const pieces = document.createDocumentFragment();
+
+  for (let index = 0; index < 90; index += 1) {
+    const piece = document.createElement("span");
+    piece.className = "ttt-confetti-piece";
+    piece.style.setProperty("--confetti-x", Math.random() * 100 + "vw");
+    piece.style.setProperty("--confetti-drift", Math.random() * 30 - 15 + "vw");
+    piece.style.setProperty("--confetti-delay", Math.random() * 0.7 + "s");
+    piece.style.setProperty("--confetti-duration", 2.6 + Math.random() * 1.8 + "s");
+    piece.style.setProperty("--confetti-rotation", 540 + Math.random() * 720 + "deg");
+    piece.style.setProperty(
+      "--confetti-color",
+      confettiColors[index % confettiColors.length],
+    );
+    pieces.appendChild(piece);
+  }
+
+  confettiLayer.appendChild(pieces);
+  confettiTimer = window.setTimeout(clearConfetti, 5200);
+}
+
 function resetBoard(startingPlayer = "X") {
   board = Array(9).fill("");
   currentPlayer = startingPlayer;
   gameFinished = false;
   winningLine = null;
   movePending = false;
+  resetCelebration();
   renderBoard();
 }
 
@@ -129,6 +180,7 @@ function applyMove(index, player) {
   }
 
   renderBoard();
+  celebrateWinner();
   return true;
 }
 
@@ -313,7 +365,9 @@ function handleGameMessage(event) {
     gameFinished = message.gameFinished;
     winningLine = message.winningLine ? message.winningLine.slice() : null;
     movePending = false;
+    if (!winningLine) resetCelebration();
     renderBoard();
+    celebrateWinner();
   }
 }
 

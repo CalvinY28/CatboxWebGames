@@ -4,6 +4,46 @@
   padding: 3rem 0 clamp(6rem, 12vw, 9rem);
 }
 
+.ttt-confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ttt-confetti-piece {
+  position: absolute;
+  top: -1.5rem;
+  left: var(--confetti-x);
+  width: 0.55rem;
+  height: 0.95rem;
+  border-radius: 0.12rem;
+  background: var(--confetti-color);
+  opacity: 0;
+  animation: ttt-confetti-fall var(--confetti-duration) var(--confetti-delay) ease-in forwards;
+}
+
+@keyframes ttt-confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -5vh, 0) rotate(0deg);
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--confetti-drift), 110vh, 0) rotate(var(--confetti-rotation));
+  }
+}
+
 .ttt-header {
   padding: clamp(4rem, 10vw, 6.5rem) 0 2.75rem;
   text-align: center;
@@ -233,6 +273,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ttt-confetti-piece {
+    display: none;
+  }
+
   .ttt-cell {
     transition: none;
   }
