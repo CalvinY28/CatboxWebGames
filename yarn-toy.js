@@ -1,6 +1,13 @@
 const yarnToy = document.querySelector("#yarn-toy");
 const yarnBall = document.querySelector("#yarn-ball");
 const yarnStringPath = document.querySelector("#yarn-string-path");
+const yarnStringShadow = document.querySelector("#yarn-string-shadow");
+
+const yarnGravity = 1350;
+const yarnSpringStrength = 36;
+const yarnSpringDamping = 4.5;
+const yarnMaximumStretch = 1.42;
+const yarnEdgeBounce = 0.52;
 
 const yarnState = {
   anchorX: 0,
@@ -49,37 +56,75 @@ function getYarnLayout() {
   };
 }
 
-function constrainYarnToRope() {
+function constrainYarnMaximumStretch() {
   const differenceX = yarnState.x - yarnState.anchorX;
   const differenceY = yarnState.y - yarnState.anchorY;
   const distance = Math.hypot(differenceX, differenceY) || 1;
+  const maximumLength = yarnState.ropeLength * yarnMaximumStretch;
 
-  if (distance <= yarnState.ropeLength) return;
+  if (distance <= maximumLength) return;
 
   const normalX = differenceX / distance;
   const normalY = differenceY / distance;
-  yarnState.x = yarnState.anchorX + normalX * yarnState.ropeLength;
-  yarnState.y = yarnState.anchorY + normalY * yarnState.ropeLength;
+  yarnState.x = yarnState.anchorX + normalX * maximumLength;
+  yarnState.y = yarnState.anchorY + normalY * maximumLength;
 
   const outwardVelocity = yarnState.velocityX * normalX + yarnState.velocityY * normalY;
   if (outwardVelocity > 0) {
-    yarnState.velocityX -= outwardVelocity * normalX;
-    yarnState.velocityY -= outwardVelocity * normalY;
+    yarnState.velocityX -= outwardVelocity * normalX * 1.08;
+    yarnState.velocityY -= outwardVelocity * normalY * 1.08;
   }
+}
+
+function applyYarnSpring(elapsedSeconds) {
+  const differenceX = yarnState.x - yarnState.anchorX;
+  const differenceY = yarnState.y - yarnState.anchorY;
+  const distance = Math.hypot(differenceX, differenceY) || 1;
+  const extension = distance - yarnState.ropeLength;
+  if (extension <= 0) return;
+
+  const normalX = differenceX / distance;
+  const normalY = differenceY / distance;
+  const outwardVelocity = yarnState.velocityX * normalX + yarnState.velocityY * normalY;
+  const tension = Math.max(
+    0,
+    yarnSpringStrength * extension + yarnSpringDamping * outwardVelocity,
+  );
+
+  yarnState.velocityX -= tension * normalX * elapsedSeconds;
+  yarnState.velocityY -= tension * normalY * elapsedSeconds;
 }
 
 function constrainYarnToScreen() {
   const width = yarnToy.clientWidth || window.innerWidth;
+  const height = Math.min(yarnToy.clientHeight || window.innerHeight, window.innerHeight);
   const minimumX = yarnState.radius + 6;
   const maximumX = width - yarnState.radius - 6;
+  const minimumY = yarnState.radius + 6;
+  const maximumY = Math.max(minimumY, height - yarnState.radius - 6);
 
   if (yarnState.x < minimumX) {
     yarnState.x = minimumX;
-    yarnState.velocityX = Math.abs(yarnState.velocityX) * 0.55;
+    yarnState.velocityX = Math.abs(yarnState.velocityX) * yarnEdgeBounce;
   } else if (yarnState.x > maximumX) {
     yarnState.x = maximumX;
-    yarnState.velocityX = -Math.abs(yarnState.velocityX) * 0.55;
+    yarnState.velocityX = -Math.abs(yarnState.velocityX) * yarnEdgeBounce;
   }
+
+  if (yarnState.y < minimumY) {
+    yarnState.y = minimumY;
+    yarnState.velocityY = Math.abs(yarnState.velocityY) * yarnEdgeBounce;
+  } else if (yarnState.y > maximumY) {
+    yarnState.y = maximumY;
+    yarnState.velocityY = -Math.abs(yarnState.velocityY) * yarnEdgeBounce;
+  }
+}
+
+function constrainYarnBall() {
+  constrainYarnMaximumStretch();
+  constrainYarnToScreen();
+  constrainYarnMaximumStretch();
+  constrainYarnToScreen();
 }
 
 function drawYarnToy() {
@@ -88,10 +133,15 @@ function drawYarnToy() {
   const distance = Math.hypot(differenceX, differenceY) || 1;
   const attachmentX = yarnState.x + differenceX / distance * yarnState.radius * 0.76;
   const attachmentY = yarnState.y + differenceY / distance * yarnState.radius * 0.76;
+  const stretch = Math.max(0, distance - yarnState.ropeLength);
+  const looseness = 1 - clampYarn(stretch / (yarnState.ropeLength * 0.22), 0, 1);
   const curveX = (yarnState.anchorX + attachmentX) / 2
     - clampYarn(yarnState.velocityX * 0.008, -24, 24);
   const curveY = (yarnState.anchorY + attachmentY) / 2
-    + Math.min(48, Math.abs(attachmentX - yarnState.anchorX) * 0.18);
+    + Math.min(48, Math.abs(attachmentX - yarnState.anchorX) * 0.18) * looseness;
+  const ropePath = "M " + yarnState.anchorX + " " + yarnState.anchorY
+    + " Q " + curveX + " " + curveY
+    + " " + attachmentX + " " + attachmentY;
 
   yarnBall.style.transform = "translate3d("
     + (yarnState.x - yarnState.radius) + "px, "
@@ -99,10 +149,9 @@ function drawYarnToy() {
     + yarnState.rotation + "deg)";
   yarnStringPath.setAttribute(
     "d",
-    "M " + yarnState.anchorX + " " + yarnState.anchorY
-      + " Q " + curveX + " " + curveY
-      + " " + attachmentX + " " + attachmentY,
+    ropePath,
   );
+  yarnStringShadow.setAttribute("d", ropePath);
 }
 
 function updateYarnLayout() {
@@ -119,8 +168,7 @@ function updateYarnLayout() {
     yarnState.initialized = true;
   } else {
     yarnState.x += yarnState.anchorX - oldAnchorX;
-    constrainYarnToRope();
-    constrainYarnToScreen();
+    constrainYarnBall();
   }
 
   drawYarnToy();
@@ -158,8 +206,7 @@ function moveYarnDrag(event) {
 
   yarnState.x = pointer.x - yarnState.grabOffsetX;
   yarnState.y = pointer.y - yarnState.grabOffsetY;
-  constrainYarnToRope();
-  constrainYarnToScreen();
+  constrainYarnBall();
 
   yarnState.velocityX = clampYarn((yarnState.x - previousX) / elapsedSeconds, -1800, 1800);
   yarnState.velocityY = clampYarn((yarnState.y - previousY) / elapsedSeconds, -1800, 1800);
@@ -201,7 +248,8 @@ function animateYarnBall(frameTime) {
   previousFrameTime = frameTime;
 
   if (!yarnState.dragging) {
-    yarnState.velocityY += 1450 * elapsedSeconds;
+    yarnState.velocityY += yarnGravity * elapsedSeconds;
+    applyYarnSpring(elapsedSeconds);
     yarnState.x += yarnState.velocityX * elapsedSeconds;
     yarnState.y += yarnState.velocityY * elapsedSeconds;
 
@@ -210,8 +258,7 @@ function animateYarnBall(frameTime) {
     yarnState.velocityY *= damping;
     yarnState.rotation += yarnState.velocityX * elapsedSeconds * 0.08;
 
-    constrainYarnToRope();
-    constrainYarnToScreen();
+    constrainYarnBall();
     drawYarnToy();
   }
 

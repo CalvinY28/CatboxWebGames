@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 32" role="img" aria-label="Yarn rope placeholder texture">
+  <rect width="16" height="32" rx="8" fill="#cb5144" />
+  <path d="M1 5l14 7M1 17l14 7M1 29l5 2" fill="none" stroke="#ffd3c7" stroke-width="3" stroke-linecap="round" opacity="0.9" />
+  <path d="M10 0l5 3M1 11l14 7M1 23l14 7" fill="none" stroke="#9f372f" stroke-width="2" stroke-linecap="round" opacity="0.75" />
+</svg>
