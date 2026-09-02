@@ -58,12 +58,12 @@ function getResultMessage() {
   if (winningLine) {
     const winner = board[winningLine[0]];
     if (mode === "online") {
-      return winner === myPlayer ? "You win!" : "Your friend wins.";
+      return winner === myPlayer ? "You Win!" : "You Lose!";
     }
-    return "Player " + winner + " wins!";
+    return "Player " + winner + " Wins!";
   }
 
-  if (gameFinished) return "It's a draw.";
+  if (gameFinished) return "Draw.";
   return null;
 }
 
@@ -90,7 +90,7 @@ function renderBoard() {
   } else if (mode === "local") {
     statusText.textContent = "Player " + currentPlayer + "'s turn";
   } else if (!peerConnected) {
-    statusText.textContent = "Waiting for your friend...";
+    statusText.textContent = "Waiting for a friend...";
   } else if (movePending) {
     statusText.textContent = "Move sent...";
   } else if (currentPlayer === myPlayer) {
