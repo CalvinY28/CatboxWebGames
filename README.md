@@ -1,7 +1,7 @@
 # Catbox Web Games
 
 Source code for [catbox.party](https://catbox.party), a collection of homemade browser games.
-Uptime for online games [here]([https://catbox.party](https://multiplayer.catbox.party/health)).
+Uptime for online games
 
 ## Add a game
 
