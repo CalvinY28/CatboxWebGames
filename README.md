@@ -19,3 +19,6 @@ python3 -m http.server 8000
 
 Then visit `http://localhost:8000`.
 
+## Online multiplayer
+
+Tic-Tac-Toe uses a Cloudflare Worker and one Durable Object per invite room to introduce the two browsers. Moves then travel through a WebRTC data channel. Deployment and local testing instructions are in [`worker/README.md`](worker/README.md).
