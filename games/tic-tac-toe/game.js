@@ -26,6 +26,7 @@ const signalingHttpOrigin = isLocalDevelopment
   : "https://multiplayer.catbox.party";
 const signalingWebSocketOrigin = signalingHttpOrigin.replace(/^http/, "ws");
 const fallbackIceServers = [{ urls: "stun:stun.cloudflare.com:3478" }];
+const webRtcSupported = typeof window.RTCPeerConnection === "function";
 
 let mode = "local";
 let board = Array(9).fill("");
@@ -42,6 +43,7 @@ let dataChannel = null;
 let pendingIceCandidates = [];
 let iceServersPromise = Promise.resolve(fallbackIceServers);
 let connectionGeneration = 0;
+let transportMode = "pending";
 
 function findWinningLine() {
   return winningLines.find(function (line) {
@@ -159,6 +161,7 @@ function closePeerConnection() {
   peerConnected = false;
   movePending = false;
   pendingIceCandidates = [];
+  transportMode = "pending";
 
   if (dataChannel) {
     dataChannel.onopen = null;
@@ -233,9 +236,17 @@ function serializeSessionDescription(description) {
 }
 
 function sendGameMessage(message) {
-  if (!dataChannel || dataChannel.readyState !== "open") return false;
-  dataChannel.send(JSON.stringify(message));
-  return true;
+  if (dataChannel && dataChannel.readyState === "open") {
+    dataChannel.send(JSON.stringify(message));
+    return true;
+  }
+
+  if (transportMode === "relay") {
+    sendSignal("game-message", message);
+    return true;
+  }
+
+  return false;
 }
 
 function currentStateMessage() {
@@ -323,7 +334,24 @@ function configureDataChannel(channel, generation) {
   };
 }
 
+function useCloudflareRelay() {
+  if (transportMode === "relay" && peerConnected) return;
+  closePeerConnection();
+  transportMode = "relay";
+  peerConnected = true;
+  movePending = false;
+  connectionStatus.textContent = "Connected — you are " + myPlayer + ".";
+  renderBoard();
+  if (myPlayer === "X") sendState();
+}
+
+function requestCloudflareRelay() {
+  sendSignal("use-relay", { requested: true });
+  useCloudflareRelay();
+}
+
 async function createPeerConnection(generation) {
+  if (!webRtcSupported) return null;
   if (peerConnection) closePeerConnection();
   const iceServers = await iceServersPromise;
   if (generation !== connectionGeneration) return null;
@@ -344,10 +372,7 @@ async function createPeerConnection(generation) {
   connection.onconnectionstatechange = function () {
     if (generation !== connectionGeneration) return;
     if (connection.connectionState === "failed" || connection.connectionState === "closed") {
-      peerConnected = false;
-      movePending = false;
-      connectionStatus.textContent = "The peer connection ended.";
-      renderBoard();
+      requestCloudflareRelay();
     } else if (connection.connectionState === "disconnected") {
       connectionStatus.textContent = "Trying to reconnect...";
     }
@@ -373,9 +398,13 @@ async function addPendingIceCandidates() {
 }
 
 async function startOffer(generation) {
-  if (generation !== connectionGeneration || myPlayer !== "X") return;
+  if (generation !== connectionGeneration || myPlayer !== "X" || transportMode === "relay") return;
+  transportMode = "webrtc";
   const connection = await createPeerConnection(generation);
-  if (!connection) return;
+  if (!connection) {
+    requestCloudflareRelay();
+    return;
+  }
   configureDataChannel(connection.createDataChannel("catbox-game"), generation);
   const offer = await connection.createOffer();
   await connection.setLocalDescription(offer);
@@ -383,9 +412,13 @@ async function startOffer(generation) {
 }
 
 async function acceptOffer(offer, generation) {
-  if (generation !== connectionGeneration || myPlayer !== "O") return;
+  if (generation !== connectionGeneration || myPlayer !== "O" || transportMode === "relay") return;
+  transportMode = "webrtc";
   const connection = await createPeerConnection(generation);
-  if (!connection) return;
+  if (!connection) {
+    requestCloudflareRelay();
+    return;
+  }
   await connection.setRemoteDescription(offer);
   await addPendingIceCandidates();
   const answer = await connection.createAnswer();
@@ -427,16 +460,27 @@ async function handleSignalMessage(event, generation) {
         ? "You are X. Send the link to a friend."
         : "You are O. Connecting to your friend...";
       renderBoard();
-      if (myPlayer === "X" && message.peerPresent) await startOffer(generation);
+      sendSignal("capabilities", { webRtc: webRtcSupported });
     } else if (message.type === "peer-joined" && myPlayer === "X") {
-      connectionStatus.textContent = "Friend joined. Creating a private connection...";
-      await startOffer(generation);
+      connectionStatus.textContent = "Friend joined. Choosing the best connection...";
+      sendSignal("capabilities", { webRtc: webRtcSupported });
+    } else if (message.type === "capabilities") {
+      if (webRtcSupported && message.payload.webRtc === true) {
+        connectionStatus.textContent = "Creating a private connection...";
+        if (myPlayer === "X" && transportMode === "pending") await startOffer(generation);
+      } else {
+        useCloudflareRelay();
+      }
     } else if (message.type === "offer" && myPlayer === "O") {
       await acceptOffer(message.payload, generation);
     } else if (message.type === "answer" && myPlayer === "X") {
       await acceptAnswer(message.payload, generation);
     } else if (message.type === "ice-candidate") {
       await acceptIceCandidate(message.payload);
+    } else if (message.type === "game-message") {
+      handleGameMessage({ data: JSON.stringify(message.payload) });
+    } else if (message.type === "use-relay") {
+      useCloudflareRelay();
     } else if (message.type === "peer-left") {
       closePeerConnection();
       connectionStatus.textContent = myPlayer === "X"
@@ -449,8 +493,7 @@ async function handleSignalMessage(event, generation) {
     }
   } catch (error) {
     console.error("WebRTC negotiation failed", error);
-    closePeerConnection();
-    connectionStatus.textContent = "The peer connection could not be created. Please create a new link and try again.";
+    requestCloudflareRelay();
   }
 }
 

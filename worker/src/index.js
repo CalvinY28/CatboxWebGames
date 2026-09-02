@@ -164,8 +164,9 @@ export class GameRoom extends DurableObject {
     const attachment = socket.deserializeAttachment();
     const role = attachment?.role;
     const allowedByRole = role === "host"
-      ? ["offer", "ice-candidate"].includes(message.type)
-      : role === "guest" && ["answer", "ice-candidate"].includes(message.type);
+      ? ["offer", "ice-candidate", "capabilities", "game-message", "use-relay"].includes(message.type)
+      : role === "guest"
+        && ["answer", "ice-candidate", "capabilities", "game-message", "use-relay"].includes(message.type);
 
     if (!allowedByRole || typeof message.payload !== "object" || !message.payload) return;
     this.sendToRole(role === "host" ? "guest" : "host", {
