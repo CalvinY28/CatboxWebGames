@@ -10,8 +10,28 @@
     <title>Catbox Games</title>
     <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="yarn-toy.css?v=1" />
   </head>
   <body>
+    <div class="yarn-toy" id="yarn-toy">
+      <svg class="yarn-string" id="yarn-string" aria-hidden="true">
+        <path id="yarn-string-path"></path>
+      </svg>
+      <button
+        class="yarn-ball"
+        id="yarn-ball"
+        type="button"
+        aria-describedby="yarn-instructions"
+        aria-label="Interactive hanging yarn ball"
+      >
+        <!-- Replace this source with your final yarn-ball image. -->
+        <img src="assets/yarn-ball-placeholder.svg" alt="" draggable="false" />
+      </button>
+      <p class="yarn-instructions" id="yarn-instructions">
+        Drag and release the yarn ball to swing it. Arrow keys can also nudge it.
+      </p>
+    </div>
+
     <div class="site-shell">
       <main>
         <header class="intro">
@@ -47,5 +67,7 @@
         <p>© 2027 Catvan Studio. All rights reserved.</p>
       </footer>
     </div>
+
+    <script src="yarn-toy.js?v=1"></script>
   </body>
 </html>
