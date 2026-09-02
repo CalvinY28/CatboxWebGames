@@ -102,7 +102,8 @@ function renderBoard() {
 
 function getNextStartingPlayer() {
   if (!winningLine) return "X";
-  return board[winningLine[0]];
+  const winner = board[winningLine[0]];
+  return winner === "X" ? "O" : "X";
 }
 
 function resetBoard(startingPlayer = "X") {
