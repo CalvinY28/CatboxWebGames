@@ -94,7 +94,7 @@ a:focus-visible {
   padding: clamp(1.35rem, 3vw, 2rem);
   border: 2px solid rgba(23, 23, 23, 0.15);
   border-radius: var(--radius);
-  box-shadow: 0 2px 0 rgba(23, 23, 23, 0.08);
+  # box-shadow: 0 2px 0 rgba(23, 23, 23, 0.08);
   text-decoration: none;
   background-position: center;
   background-size: cover;
