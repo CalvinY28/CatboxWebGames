@@ -15,11 +15,19 @@
       {
         "name": "GAME_ROOM",
         "class_name": "GameRoom"
+      },
+      {
+        "name": "HOMEPAGE_CLICK_COUNTER",
+        "class_name": "HomepageClickCounter"
       }
     ]
   },
   "exports": {
     "GameRoom": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    },
+    "HomepageClickCounter": {
       "type": "durable-object",
       "storage": "sqlite"
     }

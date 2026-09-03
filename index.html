@@ -10,6 +10,7 @@
     <title>Catbox Games</title>
     <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="daily-clicker.css?v=1" />
     <link rel="stylesheet" href="yarn-toy.css?v=3" />
   </head>
   <body>
@@ -56,10 +57,38 @@
           <div class="game-slot game-slot-purple" aria-hidden="true"></div>
         </section>
 
-        <section class="closing-note" aria-label="About this website">
-          <p>
-            Hi! I'm Catvan. Enjoy your stay!
-          </p>
+        <section class="lower-page">
+          <div class="closing-note" aria-label="About this website">
+            <p>
+              Hi! I'm Catvan. Enjoy your stay!
+            </p>
+          </div>
+
+          <aside class="daily-clicker" aria-label="Daily image click counter">
+            <p
+              class="daily-click-message"
+              id="daily-click-message"
+              role="status"
+              aria-live="polite"
+              hidden
+            ></p>
+            <button
+              class="daily-click-button"
+              id="daily-click-button"
+              type="button"
+              aria-label="Click the placeholder image"
+              aria-describedby="daily-click-hint"
+            >
+              <img
+                src="assets/daily-click-placeholder.svg?v=1"
+                alt=""
+                draggable="false"
+              />
+            </button>
+            <span class="visually-hidden" id="daily-click-hint">
+              This image can be clicked once per page load.
+            </span>
+          </aside>
         </section>
       </main>
 
@@ -73,6 +102,7 @@
       </footer>
     </div>
 
+    <script src="daily-clicker.js?v=1"></script>
     <script src="yarn-toy.js?v=14"></script>
   </body>
 </html>

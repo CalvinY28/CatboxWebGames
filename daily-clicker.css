@@ -1,0 +1,164 @@
+.lower-page {
+  position: relative;
+  width: min(1120px, calc(100% - 3rem));
+  margin: 0 auto;
+}
+
+.lower-page .closing-note {
+  width: min(720px, 100%);
+}
+
+.daily-clicker {
+  position: absolute;
+  right: 0;
+  bottom: 2rem;
+  z-index: 2;
+  display: grid;
+  width: clamp(7.5rem, 11vw, 9.5rem);
+  justify-items: center;
+}
+
+.daily-click-button {
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 1.8rem;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  filter: drop-shadow(0 10px 12px rgba(23, 23, 23, 0.12));
+  transition: filter 180ms ease, transform 180ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.daily-click-button:hover:not(:disabled),
+.daily-click-button:focus-visible:not(:disabled) {
+  filter: drop-shadow(0 14px 14px rgba(23, 23, 23, 0.17));
+  transform: translateY(-5px) rotate(-2deg);
+}
+
+.daily-click-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 5px;
+}
+
+.daily-click-button:disabled {
+  cursor: default;
+  filter: saturate(0.82) drop-shadow(0 7px 9px rgba(23, 23, 23, 0.1));
+}
+
+.daily-click-button.is-clicked {
+  animation: daily-click-pop 420ms ease-out;
+}
+
+.daily-click-button img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.daily-click-message {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 1rem);
+  width: min(18rem, calc(100vw - 3rem));
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(23, 23, 23, 0.12);
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.45;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.5rem);
+  transition: opacity 1s ease, transform 240ms ease;
+}
+
+.daily-click-message::after {
+  position: absolute;
+  right: 2.1rem;
+  bottom: -0.5rem;
+  width: 1rem;
+  height: 1rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.daily-click-message.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes daily-click-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.9) rotate(3deg); }
+  72% { transform: scale(1.06) rotate(-2deg); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 700px) {
+  .lower-page {
+    display: grid;
+    width: calc(100% - 2rem);
+    justify-items: center;
+  }
+
+  .lower-page .closing-note {
+    padding-bottom: 3rem;
+  }
+
+  .daily-clicker {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 8.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .daily-click-message {
+    right: auto;
+    left: 50%;
+    width: min(18rem, calc(100vw - 2rem));
+    transform: translate(-50%, 0.5rem);
+  }
+
+  .daily-click-message.is-visible {
+    transform: translate(-50%, 0);
+  }
+
+  .daily-click-message::after {
+    right: calc(50% - 0.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daily-click-button,
+  .daily-click-message {
+    transition: none;
+  }
+
+  .daily-click-button.is-clicked {
+    animation: none;
+  }
+}

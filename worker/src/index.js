@@ -15,7 +15,7 @@ function isAllowedOrigin(origin) {
 function corsHeaders(origin) {
   return {
     "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",
@@ -73,6 +73,30 @@ async function getIceServers(request, env) {
   }
 }
 
+async function getHomepageClicks(request, env) {
+  const origin = request.headers.get("Origin") || "";
+  if (!isAllowedOrigin(origin)) {
+    return jsonResponse({ error: "Origin not allowed" }, { status: 403 });
+  }
+
+  const counterId = env.HOMEPAGE_CLICK_COUNTER.idFromName("homepage");
+  const counter = env.HOMEPAGE_CLICK_COUNTER.get(counterId);
+  const response = await counter.fetch(
+    new Request("https://homepage-click-counter.internal/", {
+      method: request.method,
+    }),
+  );
+  const result = await response.json();
+
+  return jsonResponse(result, {
+    status: response.status,
+    headers: {
+      ...corsHeaders(origin),
+      "Cache-Control": "no-store",
+    },
+  });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -89,6 +113,13 @@ export default {
 
     if (request.method === "GET" && url.pathname === "/ice-servers") {
       return getIceServers(request, env);
+    }
+
+    if (
+      (request.method === "GET" || request.method === "POST")
+      && url.pathname === "/homepage-clicks"
+    ) {
+      return getHomepageClicks(request, env);
     }
 
     const roomMatch = url.pathname.match(/^\/rooms\/([A-Za-z0-9_-]{22})$/);
@@ -189,5 +220,44 @@ export class GameRoom extends DurableObject {
       this.sendToRole(role === "host" ? "guest" : "host", { type: "peer-left" });
     }
     socket.close(1011, "WebSocket error");
+  }
+}
+
+const homepageClickWindowMilliseconds = 24 * 60 * 60 * 1000;
+
+export class HomepageClickCounter extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.ctx.blockConcurrencyWhile(async () => {
+      this.ctx.storage.sql.exec(
+        "CREATE TABLE IF NOT EXISTS clicks (clicked_at INTEGER NOT NULL)",
+      );
+      this.ctx.storage.sql.exec(
+        "CREATE INDEX IF NOT EXISTS clicks_clicked_at ON clicks(clicked_at)",
+      );
+    });
+  }
+
+  async fetch(request) {
+    if (request.method !== "GET" && request.method !== "POST") {
+      return jsonResponse({ error: "Method not allowed" }, { status: 405 });
+    }
+
+    const now = Date.now();
+    const cutoff = now - homepageClickWindowMilliseconds;
+    this.ctx.storage.sql.exec("DELETE FROM clicks WHERE clicked_at <= ?", cutoff);
+
+    if (request.method === "POST") {
+      this.ctx.storage.sql.exec("INSERT INTO clicks (clicked_at) VALUES (?)", now);
+    }
+
+    const rows = this.ctx.storage.sql.exec(
+      "SELECT COUNT(*) AS count FROM clicks",
+    ).toArray();
+
+    return jsonResponse({
+      count: Number(rows[0]?.count || 0),
+      windowHours: 24,
+    });
   }
 }
