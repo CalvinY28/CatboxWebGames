@@ -6,7 +6,7 @@ const yarnStringShadow = document.querySelector("#yarn-string-shadow");
 const yarnGravity = 1350;
 const yarnSpringStrength = 60;
 const yarnSpringDamping = 2;
-const yarnMaximumStretch = 7.5;
+const yarnMaximumStretch = 7;
 const yarnEdgeBounce = 0.75;
 
 const yarnState = {
