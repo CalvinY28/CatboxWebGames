@@ -45,14 +45,10 @@ async function registerDailyClick() {
       throw new Error("The click count response was invalid.");
     }
 
-    const times = result.count === 1 ? "time" : "times";
-    showDailyClickMessage(
-      "This image has been clicked " + result.count + " " + times
-        + " in the last 24 hours.",
-    );
+    showDailyClickMessage("Lola has been pet " + result.count + " times today!");
   } catch (error) {
     console.error("Could not register the daily image click.", error);
-    showDailyClickMessage("The click was registered here, but the daily count is unavailable.");
+    showDailyClickMessage("Lola was pet, but today's count is unavailable.");
   }
 }
 

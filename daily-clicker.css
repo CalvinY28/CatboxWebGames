@@ -11,7 +11,7 @@
 .daily-clicker {
   position: absolute;
   right: 0;
-  bottom: 2rem;
+  bottom: 0;
   z-index: 2;
   display: grid;
   width: clamp(7.5rem, 11vw, 9.5rem);
