@@ -4,10 +4,10 @@ const yarnStringPath = document.querySelector("#yarn-string-path");
 const yarnStringShadow = document.querySelector("#yarn-string-shadow");
 
 const yarnGravity = 1350;
-const yarnSpringStrength = 36;
-const yarnSpringDamping = 4.5;
-const yarnMaximumStretch = 1.42;
-const yarnEdgeBounce = 0.52;
+const yarnSpringStrength = 60;
+const yarnSpringDamping = 2;
+const yarnMaximumStretch = 5;
+const yarnEdgeBounce = 0.75;
 
 const yarnState = {
   anchorX: 0,
