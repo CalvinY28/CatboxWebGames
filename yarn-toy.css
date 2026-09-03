@@ -26,12 +26,16 @@
 
 .yarn-string .yarn-string-shadow {
   stroke: rgba(23, 23, 23, 0.22);
-  stroke-width: 10;
+  stroke-width: 12;
 }
 
 .yarn-string #yarn-string-path {
-  stroke: url("#yarn-rope-pattern") #cb5144;
-  stroke-width: 8;
+  stroke: transparent;
+  stroke-width: 1;
+}
+
+.yarn-string .yarn-rope-segment {
+  pointer-events: none;
 }
 
 .yarn-ball {

@@ -2,12 +2,18 @@ const yarnToy = document.querySelector("#yarn-toy");
 const yarnBall = document.querySelector("#yarn-ball");
 const yarnStringPath = document.querySelector("#yarn-string-path");
 const yarnStringShadow = document.querySelector("#yarn-string-shadow");
+const yarnStringSegments = document.querySelector("#yarn-string-segments");
 
 const yarnGravity = 1350;
 const yarnSpringStrength = 60;
 const yarnSpringDamping = 2;
 const yarnMaximumStretch = 7;
 const yarnEdgeBounce = 0.75;
+const yarnSegmentSpacing = 10;
+const yarnSegmentLength = 13;
+const yarnSegmentThickness = 10;
+const yarnSvgNamespace = "http://www.w3.org/2000/svg";
+const yarnSegmentPool = [];
 
 const yarnState = {
   anchorX: 0,
@@ -133,6 +139,52 @@ function constrainYarnBall() {
   constrainYarnToScreen();
 }
 
+function createYarnSegment() {
+  const segment = document.createElementNS(yarnSvgNamespace, "image");
+  segment.setAttribute("class", "yarn-rope-segment");
+  segment.setAttribute("href", yarnStringSegments.dataset.segmentSrc);
+  segment.setAttribute("preserveAspectRatio", "none");
+  segment.setAttribute("x", String(-yarnSegmentLength / 2));
+  segment.setAttribute("y", String(-yarnSegmentThickness / 2));
+  segment.setAttribute("width", String(yarnSegmentLength));
+  segment.setAttribute("height", String(yarnSegmentThickness));
+  yarnStringSegments.appendChild(segment);
+  yarnSegmentPool.push(segment);
+  return segment;
+}
+
+function placeYarnTexture() {
+  const pathLength = yarnStringPath.getTotalLength();
+  const segmentCount = Math.max(1, Math.ceil(pathLength / yarnSegmentSpacing));
+
+  while (yarnSegmentPool.length < segmentCount) {
+    createYarnSegment();
+  }
+
+  for (let index = 0; index < yarnSegmentPool.length; index += 1) {
+    const segment = yarnSegmentPool[index];
+    if (index >= segmentCount) {
+      segment.style.display = "none";
+      continue;
+    }
+
+    const distance = Math.min(
+      index * yarnSegmentSpacing + yarnSegmentSpacing / 2,
+      pathLength,
+    );
+    const point = yarnStringPath.getPointAtLength(distance);
+    const previousPoint = yarnStringPath.getPointAtLength(Math.max(0, distance - 1));
+    const nextPoint = yarnStringPath.getPointAtLength(Math.min(pathLength, distance + 1));
+    const angle = Math.atan2(
+      nextPoint.y - previousPoint.y,
+      nextPoint.x - previousPoint.x,
+    ) * 180 / Math.PI;
+
+    segment.style.display = "";
+    segment.setAttribute("transform", "translate(" + point.x + " " + point.y + ") rotate(" + angle + ")");
+  }
+}
+
 function drawYarnToy() {
   const differenceX = yarnState.anchorX - yarnState.x;
   const differenceY = yarnState.anchorY - yarnState.y;
@@ -158,6 +210,7 @@ function drawYarnToy() {
     ropePath,
   );
   yarnStringShadow.setAttribute("d", ropePath);
+  placeYarnTexture();
 }
 
 function updateYarnLayout() {
