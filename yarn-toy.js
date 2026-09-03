@@ -97,7 +97,9 @@ function applyYarnSpring(elapsedSeconds) {
 
 function constrainYarnToScreen() {
   const width = yarnToy.clientWidth || window.innerWidth;
-  const height = yarnToy.clientHeight || window.innerHeight
+  const height = Math.min(
+  yarnToy.clientHeight || window.innerHeight,
+  window.innerHeight
   const minimumX = yarnState.radius + 1;
   const maximumX = width - yarnState.radius - 1;
   const minimumY = yarnState.radius + 1;
