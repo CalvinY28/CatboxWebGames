@@ -23,6 +23,8 @@ const yarnState = {
   pointerId: null,
   grabOffsetX: 0,
   grabOffsetY: 0,
+  pointerClientX: 0,
+  pointerClientY: 0,
   lastPointerTime: 0,
   initialized: false,
 };
@@ -97,7 +99,11 @@ function applyYarnSpring(elapsedSeconds) {
 
 function constrainYarnToScreen() {
   const width = yarnToy.clientWidth || window.innerWidth;
-  const height = window.innerHeight;
+  const height = Math.max(
+    document.documentElement.scrollHeight,
+    document.body.scrollHeight,
+    window.innerHeight,
+  );
   const minimumX = yarnState.radius;
   const maximumX = width - yarnState.radius;
   const minimumY = yarnState.radius;
@@ -182,6 +188,45 @@ function getPointerPosition(event) {
   };
 }
 
+function updateYarnDragAutoScroll(elapsedSeconds) {
+  const edgeZone = 72;
+  const maximumSpeed = 900;
+  const pageHeight = Math.max(
+    document.documentElement.scrollHeight,
+    document.body.scrollHeight,
+    window.innerHeight,
+  );
+  const maximumScroll = Math.max(0, pageHeight - window.innerHeight);
+  let scrollSpeed = 0;
+
+  if (yarnState.pointerClientY > window.innerHeight - edgeZone) {
+    const strength = clampYarn(
+      (yarnState.pointerClientY - (window.innerHeight - edgeZone)) / edgeZone,
+      0,
+      1,
+    );
+    scrollSpeed = maximumSpeed * strength;
+  } else if (yarnState.pointerClientY < edgeZone) {
+    const strength = clampYarn((edgeZone - yarnState.pointerClientY) / edgeZone, 0, 1);
+    scrollSpeed = -maximumSpeed * strength;
+  }
+
+  const oldScrollY = window.scrollY;
+  const scrollAmount = clampYarn(
+    scrollSpeed * elapsedSeconds,
+    -oldScrollY,
+    maximumScroll - oldScrollY,
+  );
+  if (Math.abs(scrollAmount) < 0.01) return;
+
+  window.scrollBy(0, scrollAmount);
+  const bounds = yarnToy.getBoundingClientRect();
+  yarnState.x = yarnState.pointerClientX - bounds.left - yarnState.grabOffsetX;
+  yarnState.y = yarnState.pointerClientY - bounds.top - yarnState.grabOffsetY;
+  constrainYarnBall();
+  drawYarnToy();
+}
+
 function beginYarnDrag(event) {
   if (event.button !== undefined && event.button !== 0) return;
   const pointer = getPointerPosition(event);
@@ -189,6 +234,8 @@ function beginYarnDrag(event) {
   yarnState.pointerId = event.pointerId;
   yarnState.grabOffsetX = pointer.x - yarnState.x;
   yarnState.grabOffsetY = pointer.y - yarnState.y;
+  yarnState.pointerClientX = event.clientX;
+  yarnState.pointerClientY = event.clientY;
   yarnState.lastPointerTime = performance.now();
   yarnState.velocityX = 0;
   yarnState.velocityY = 0;
@@ -204,6 +251,8 @@ function moveYarnDrag(event) {
   const currentTime = performance.now();
   const elapsedSeconds = Math.max((currentTime - yarnState.lastPointerTime) / 1000, 0.008);
 
+  yarnState.pointerClientX = event.clientX;
+  yarnState.pointerClientY = event.clientY;
   yarnState.x = pointer.x - yarnState.grabOffsetX;
   yarnState.y = pointer.y - yarnState.grabOffsetY;
   constrainYarnBall();
@@ -260,6 +309,8 @@ function animateYarnBall(frameTime) {
 
     constrainYarnBall();
     drawYarnToy();
+  } else {
+    updateYarnDragAutoScroll(elapsedSeconds);
   }
 
   window.requestAnimationFrame(animateYarnBall);
