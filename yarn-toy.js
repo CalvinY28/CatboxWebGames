@@ -6,7 +6,7 @@ const yarnStringShadow = document.querySelector("#yarn-string-shadow");
 const yarnGravity = 1350;
 const yarnSpringStrength = 60;
 const yarnSpringDamping = 2;
-const yarnMaximumStretch = 10;
+const yarnMaximumStretch = 7.5;
 const yarnEdgeBounce = 0.75;
 
 const yarnState = {
@@ -97,11 +97,11 @@ function applyYarnSpring(elapsedSeconds) {
 
 function constrainYarnToScreen() {
   const width = yarnToy.clientWidth || window.innerWidth;
-  const height = Math.min(yarnToy.clientHeight || window.innerHeight, window.innerHeight);
-  const minimumX = yarnState.radius + 1;
-  const maximumX = width - yarnState.radius - 1;
-  const minimumY = yarnState.radius + 1;
-  const maximumY = Math.max(minimumY, height - yarnState.radius - 1);
+  const height = yarnToy.clientHeight || window.innerHeight
+  const minimumX = yarnState.radius + (-10);
+  const maximumX = width - yarnState.radius - (10);
+  const minimumY = yarnState.radius + (-10);
+  const maximumY = Math.max(minimumY, height - yarnState.radius - (10);
 
   if (yarnState.x < minimumX) {
     yarnState.x = minimumX;
