@@ -65,7 +65,8 @@
   position: absolute;
   right: 0;
   bottom: calc(100% + 1rem);
-  width: min(18rem, calc(100vw - 3rem));
+  width: max-content;
+  max-width: min(18rem, calc(100vw - 3rem));
   margin: 0;
   padding: 0.9rem 1rem;
   border: 1px solid var(--line);
@@ -139,7 +140,8 @@
   .daily-click-message {
     right: auto;
     left: 50%;
-    width: min(18rem, calc(100vw - 2rem));
+    width: max-content;
+    max-width: min(18rem, calc(100vw - 2rem));
     transform: translate(-50%, 0.5rem);
   }
 
