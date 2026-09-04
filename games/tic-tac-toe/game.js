@@ -105,7 +105,7 @@ function renderRematchPrompt() {
     rematchButton.textContent = "Waiting for friend...";
     rematchButton.disabled = true;
   } else if (rematchRequestedByPeer) {
-    rematchButton.textContent = "Accept friend's rematch";
+    rematchButton.textContent = "Accept Rematch";
   } else {
     rematchButton.textContent = "Rematch";
   }
