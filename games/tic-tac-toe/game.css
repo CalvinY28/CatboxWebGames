@@ -240,7 +240,7 @@
 
 .ttt-rematch {
   margin-top: 1rem;
-  padding: 1.15rem;
+  padding: 1rem;
   border: 1px solid #e2bd3e;
   border-radius: 1rem;
   background: #fff7d8;
@@ -250,18 +250,6 @@
 
 .ttt-rematch[hidden] {
   display: none;
-}
-
-.ttt-rematch h2 {
-  margin: 0;
-  font-size: 1.35rem;
-  letter-spacing: -0.03em;
-}
-
-.ttt-rematch p {
-  margin: 0.45rem 0 0.9rem;
-  color: #5f583f;
-  line-height: 1.45;
 }
 
 .ttt-rematch-button {

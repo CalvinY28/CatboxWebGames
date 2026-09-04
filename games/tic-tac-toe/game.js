@@ -9,7 +9,6 @@ const copyInviteButton = document.querySelector("#copy-invite");
 const newRoomButton = document.querySelector("#new-room");
 const confettiLayer = document.querySelector("#confetti");
 const rematchPanel = document.querySelector("#rematch-panel");
-const rematchMessage = document.querySelector("#rematch-message");
 const rematchButton = document.querySelector("#rematch-button");
 
 const winningLines = [
@@ -92,28 +91,22 @@ function renderRematchPrompt() {
   rematchButton.disabled = false;
 
   if (mode === "local") {
-    rematchMessage.textContent = "Ready for another round?";
     rematchButton.textContent = "Rematch";
     return;
   }
 
   if (!peerConnected) {
-    rematchMessage.textContent = "Your friend needs to reconnect before you can play again.";
     rematchButton.textContent = "Waiting for friend...";
     rematchButton.disabled = true;
   } else if (rematchRequestedByMe && rematchRequestedByPeer) {
-    rematchMessage.textContent = "Both players agreed. Starting the next round...";
     rematchButton.textContent = "Starting...";
     rematchButton.disabled = true;
   } else if (rematchRequestedByMe) {
-    rematchMessage.textContent = "Your friend has been told you want a rematch.";
     rematchButton.textContent = "Waiting for friend...";
     rematchButton.disabled = true;
   } else if (rematchRequestedByPeer) {
-    rematchMessage.textContent = "Your friend wants a rematch!";
-    rematchButton.textContent = "Accept rematch";
+    rematchButton.textContent = "Accept friend's rematch";
   } else {
-    rematchMessage.textContent = "Both players need to agree before the board resets.";
     rematchButton.textContent = "Rematch";
   }
 }
