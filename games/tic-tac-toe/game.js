@@ -1,6 +1,5 @@
 const cells = Array.from(document.querySelectorAll("[data-cell]"));
 const statusText = document.querySelector("#game-status");
-const resetButton = document.querySelector("#reset-game");
 const localModeButton = document.querySelector("#local-mode");
 const onlineModeButton = document.querySelector("#online-mode");
 const onlinePanel = document.querySelector("#online-panel");
@@ -9,6 +8,9 @@ const inviteLink = document.querySelector("#invite-link");
 const copyInviteButton = document.querySelector("#copy-invite");
 const newRoomButton = document.querySelector("#new-room");
 const confettiLayer = document.querySelector("#confetti");
+const rematchPanel = document.querySelector("#rematch-panel");
+const rematchMessage = document.querySelector("#rematch-message");
+const rematchButton = document.querySelector("#rematch-button");
 
 const winningLines = [
   [0, 1, 2],
@@ -49,6 +51,8 @@ let connectionGeneration = 0;
 let transportMode = "pending";
 let celebratedWinner = null;
 let confettiTimer = null;
+let rematchRequestedByMe = false;
+let rematchRequestedByPeer = false;
 
 function findWinningLine() {
   return winningLines.find(function (line) {
@@ -78,6 +82,42 @@ function canPlayCell(index) {
   return peerConnected && !movePending && currentPlayer === myPlayer;
 }
 
+function renderRematchPrompt() {
+  if (!gameFinished) {
+    rematchPanel.hidden = true;
+    return;
+  }
+
+  rematchPanel.hidden = false;
+  rematchButton.disabled = false;
+
+  if (mode === "local") {
+    rematchMessage.textContent = "Ready for another round?";
+    rematchButton.textContent = "Rematch";
+    return;
+  }
+
+  if (!peerConnected) {
+    rematchMessage.textContent = "Your friend needs to reconnect before you can play again.";
+    rematchButton.textContent = "Waiting for friend...";
+    rematchButton.disabled = true;
+  } else if (rematchRequestedByMe && rematchRequestedByPeer) {
+    rematchMessage.textContent = "Both players agreed. Starting the next round...";
+    rematchButton.textContent = "Starting...";
+    rematchButton.disabled = true;
+  } else if (rematchRequestedByMe) {
+    rematchMessage.textContent = "Your friend has been told you want a rematch.";
+    rematchButton.textContent = "Waiting for friend...";
+    rematchButton.disabled = true;
+  } else if (rematchRequestedByPeer) {
+    rematchMessage.textContent = "Your friend wants a rematch!";
+    rematchButton.textContent = "Accept rematch";
+  } else {
+    rematchMessage.textContent = "Both players need to agree before the board resets.";
+    rematchButton.textContent = "Rematch";
+  }
+}
+
 function renderBoard() {
   cells.forEach(function (cell, index) {
     const value = board[index];
@@ -103,6 +143,8 @@ function renderBoard() {
   } else {
     statusText.textContent = "Friend's turn (" + currentPlayer + ")";
   }
+
+  renderRematchPrompt();
 }
 
 function getNextStartingPlayer() {
@@ -125,6 +167,11 @@ function clearConfetti() {
 function resetCelebration() {
   celebratedWinner = null;
   clearConfetti();
+}
+
+function clearRematchAgreement() {
+  rematchRequestedByMe = false;
+  rematchRequestedByPeer = false;
 }
 
 function celebrateWinner() {
@@ -167,6 +214,7 @@ function resetBoard(startingPlayer = "X") {
   gameFinished = false;
   winningLine = null;
   movePending = false;
+  clearRematchAgreement();
   resetCelebration();
   renderBoard();
 }
@@ -223,6 +271,7 @@ function isValidRoomId(value) {
 function closePeerConnection() {
   peerConnected = false;
   movePending = false;
+  clearRematchAgreement();
   pendingIceCandidates = [];
   transportMode = "pending";
 
@@ -319,6 +368,7 @@ function currentStateMessage() {
     currentPlayer: currentPlayer,
     gameFinished: gameFinished,
     winningLine: winningLine,
+    roundStartingPlayer: roundStartingPlayer,
   };
 }
 
@@ -338,12 +388,27 @@ function isValidState(message) {
       && message.winningLine.every(function (index) {
         return Number.isInteger(index) && index >= 0 && index <= 8;
       }));
+  const validRoundStartingPlayer = message.roundStartingPlayer === undefined
+    || message.roundStartingPlayer === "X"
+    || message.roundStartingPlayer === "O";
 
   return message.type === "state"
     && validBoard
     && (message.currentPlayer === "X" || message.currentPlayer === "O")
     && typeof message.gameFinished === "boolean"
-    && validWinningLine;
+    && validWinningLine
+    && validRoundStartingPlayer;
+}
+
+function beginOnlineRematchIfReady() {
+  if (myPlayer !== "X"
+    || !gameFinished
+    || !rematchRequestedByMe
+    || !rematchRequestedByPeer) return;
+
+  const nextStartingPlayer = getNextStartingPlayer();
+  resetBoard(nextStartingPlayer);
+  sendState();
 }
 
 function handleGameMessage(event) {
@@ -354,11 +419,15 @@ function handleGameMessage(event) {
     return;
   }
 
+  if (message.type === "rematch-request" && gameFinished) {
+    rematchRequestedByPeer = true;
+    renderBoard();
+    beginOnlineRematchIfReady();
+    return;
+  }
+
   if (myPlayer === "X") {
     if (message.type === "move" && applyMove(message.index, "O")) {
-      sendState();
-    } else if (message.type === "reset") {
-      resetBoard(getNextStartingPlayer());
       sendState();
     }
     return;
@@ -369,7 +438,9 @@ function handleGameMessage(event) {
     currentPlayer = message.currentPlayer;
     gameFinished = message.gameFinished;
     winningLine = message.winningLine ? message.winningLine.slice() : null;
+    roundStartingPlayer = message.roundStartingPlayer || roundStartingPlayer;
     movePending = false;
+    if (!gameFinished) clearRematchAgreement();
     if (!winningLine) resetCelebration();
     renderBoard();
     celebrateWinner();
@@ -616,17 +687,23 @@ function playTurn(event) {
   }
 }
 
-function restartGame() {
+function requestRematch() {
+  if (!gameFinished) return;
+
   if (mode === "local") {
     resetBoard(getNextStartingPlayer());
     cells[0].focus();
-  } else if (myPlayer === "X" && peerConnected) {
-    resetBoard(getNextStartingPlayer());
-    sendState();
-  } else if (myPlayer === "O" && peerConnected && sendGameMessage({ type: "reset" })) {
-    movePending = true;
-    statusText.textContent = "Restart requested...";
+    return;
   }
+
+  if (!peerConnected || !myPlayer || rematchRequestedByMe) return;
+
+  rematchRequestedByMe = true;
+  if (!sendGameMessage({ type: "rematch-request" })) {
+    rematchRequestedByMe = false;
+  }
+  renderBoard();
+  beginOnlineRematchIfReady();
 }
 
 async function copyInvite() {
@@ -647,7 +724,7 @@ cells.forEach(function (cell) {
   cell.addEventListener("click", playTurn);
 });
 
-resetButton.addEventListener("click", restartGame);
+rematchButton.addEventListener("click", requestRematch);
 localModeButton.addEventListener("click", switchToLocal);
 onlineModeButton.addEventListener("click", function () {
   if (mode !== "online") switchToOnline(createRoomId());

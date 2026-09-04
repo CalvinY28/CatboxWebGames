@@ -7,7 +7,7 @@
     <title>Tic-Tac-Toe | Catbox Games</title>
     <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="game.css?v=2" />
+    <link rel="stylesheet" href="game.css?v=3" />
   </head>
   <body>
     <div class="ttt-confetti" id="confetti" aria-hidden="true"></div>
@@ -52,20 +52,32 @@
             <button class="ttt-cell" type="button" data-cell="8" data-label="Bottom right" aria-label="Bottom right, empty"></button>
           </div>
 
-          <button class="ttt-reset" id="reset-game" type="button">Reset</button>
+          <section
+            class="ttt-rematch"
+            id="rematch-panel"
+            aria-labelledby="rematch-title"
+            aria-live="polite"
+            hidden
+          >
+            <h2 id="rematch-title">Rematch?</h2>
+            <p id="rematch-message">Ready for another round?</p>
+            <button class="ttt-rematch-button" id="rematch-button" type="button">
+              Rematch
+            </button>
+          </section>
         </section>
       </main>
 
       <footer class="site-footer">
         <nav aria-label="Footer navigation">
           <a href="/privacy/">Privacy policy</a>
-          <a href="mailto:mail@catbox.party">Contact</a>
+          <a href="/about/">About</a>
           <a href="/tip/">☕Tip</a>
         </nav>
         <p>© 2027 Catvan Studio. All rights reserved.</p>
       </footer>
     </div>
 
-    <script src="game.js?v=7"></script>
+    <script src="game.js?v=8"></script>
   </body>
 </html>

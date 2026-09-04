@@ -214,7 +214,7 @@
 .ttt-mode-button:focus-visible,
 .ttt-invite-row button:focus-visible,
 .ttt-new-room:focus-visible,
-.ttt-reset:focus-visible,
+.ttt-rematch-button:focus-visible,
 .ttt-invite-row input:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 4px;
@@ -238,13 +238,37 @@
   color: #171717;
 }
 
-.ttt-reset {
-  display: block;
+.ttt-rematch {
+  margin-top: 1rem;
+  padding: 1.15rem;
+  border: 1px solid #e2bd3e;
+  border-radius: 1rem;
+  background: #fff7d8;
+  text-align: center;
+  animation: ttt-rematch-pop 180ms ease-out;
+}
+
+.ttt-rematch[hidden] {
+  display: none;
+}
+
+.ttt-rematch h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+}
+
+.ttt-rematch p {
+  margin: 0.45rem 0 0.9rem;
+  color: #5f583f;
+  line-height: 1.45;
+}
+
+.ttt-rematch-button {
   width: 100%;
   min-height: 3.4rem;
-  margin-top: 1rem;
   border: 0;
-  border-radius: 1rem;
+  border-radius: 0.85rem;
   background: #171717;
   color: #fff;
   font: inherit;
@@ -252,9 +276,26 @@
   cursor: pointer;
 }
 
-.ttt-reset:hover,
+.ttt-rematch-button:hover:not(:disabled),
 .ttt-invite-row button:hover {
   background: #343434;
+}
+
+.ttt-rematch-button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+@keyframes ttt-rematch-pop {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .ttt-new-room:hover {
@@ -279,5 +320,9 @@
 
   .ttt-cell {
     transition: none;
+  }
+
+  .ttt-rematch {
+    animation: none;
   }
 }
