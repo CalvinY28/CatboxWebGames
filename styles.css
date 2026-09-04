@@ -129,6 +129,10 @@ a:focus-visible {
 .game-slot-pink { background: #f3a8c5; }
 .game-slot-purple { background: #ad95e8; }
 
+.game-slot-wip {
+  background-image: url("assets/WIP_placeholder.gif?v=1");
+}
+
 .closing-note {
   width: min(720px, calc(100% - 3rem));
   margin: 0 auto;
@@ -414,42 +418,3 @@ a:focus-visible {
   .game-grid {
     grid-template-columns: 1fr;
     width: min(100% - 2rem, 420px);
-  }
-
-  .game-slot { aspect-ratio: 1.15 / 1; }
-
-  .site-footer {
-    align-items: flex-start;
-    flex-direction: column;
-    width: calc(100% - 2rem);
-  }
-
-  .site-footer p { text-align: left; }
-
-  .policy-page {
-    width: calc(100% - 2rem);
-    padding-top: 2rem;
-  }
-
-  .tip-page {
-    width: calc(100% - 2rem);
-    padding-top: 2rem;
-  }
-
-  .tip-amounts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .tip-methods {
-    grid-template-columns: 1fr;
-  }
-
-  .policy-content section {
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-}
