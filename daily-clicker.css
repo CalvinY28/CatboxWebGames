@@ -11,7 +11,7 @@
 .daily-clicker {
   position: absolute;
   right: 0;
-  bottom: 0;
+  bottom: -2rem;
   z-index: 2;
   display: grid;
   width: clamp(7.5rem, 11vw, 9.5rem);
@@ -64,7 +64,7 @@
 .daily-click-message {
   position: absolute;
   right: 0;
-  bottom: calc(100% + 1rem);
+  bottom: calc(100% - 0.25rem);
   width: max-content;
   max-width: min(18rem, calc(100vw - 3rem));
   margin: 0;
@@ -85,7 +85,7 @@
 
 .daily-click-message::after {
   position: absolute;
-  right: 2.1rem;
+  right: 6.5rem;
   bottom: -0.5rem;
   width: 1rem;
   height: 1rem;
@@ -150,7 +150,7 @@
   }
 
   .daily-click-message::after {
-    right: calc(50% - 0.5rem);
+    right: calc(50% + 1.5rem);
   }
 }
 
