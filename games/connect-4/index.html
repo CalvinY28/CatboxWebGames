@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Play local two-player Connect 4 on Catbox Games." />
+    <meta name="description" content="Play local or online two-player Connect 4 on Catbox Games." />
     <title>Connect 4 | Catbox Games</title>
     <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="game.css?v=5" />
+    <link rel="stylesheet" href="game.css?v=6" />
   </head>
   <body>
     <div class="c4-confetti" id="confetti" aria-hidden="true"></div>
@@ -23,6 +23,22 @@
         </header>
 
         <section class="c4-game" aria-labelledby="game-status">
+          <div class="c4-mode-picker" role="group" aria-label="Choose how to play">
+            <button class="c4-mode-button is-active" id="local-mode" type="button" aria-pressed="true">Local</button>
+            <button class="c4-mode-button" id="online-mode" type="button" aria-pressed="false">Play Online</button>
+          </div>
+
+          <div class="c4-online-panel" id="online-panel" hidden>
+            <p id="connection-status" class="c4-connection-status" role="status" aria-live="polite"></p>
+            <label class="c4-invite-label" for="invite-link">Invite link</label>
+            <div class="c4-invite-row">
+              <input id="invite-link" type="text" readonly />
+              <button id="copy-invite" type="button">Copy</button>
+            </div>
+            <button class="c4-new-room" id="new-room" type="button">Create a new link</button>
+            <p class="c4-online-note">Anyone with this link can join your room.</p>
+          </div>
+
           <p id="game-status" class="c4-status" role="status" aria-live="polite">
             Red's turn
           </p>
@@ -61,6 +77,6 @@
       </footer>
     </div>
 
-    <script src="game.js?v=1"></script>
+    <script src="game.js?v=2"></script>
   </body>
 </html>
