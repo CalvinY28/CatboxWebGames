@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Play local two-player Connect 4 on Catbox Games." />
+    <title>Connect 4 | Catbox Games</title>
+    <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="game.css?v=1" />
+  </head>
+  <body>
+    <div class="c4-confetti" id="confetti" aria-hidden="true"></div>
+
+    <div class="site-shell">
+      <main class="c4-page">
+        <a class="back-link" href="../../">Back to games</a>
+
+        <header class="c4-header">
+          <p class="site-label">Two-player game</p>
+          <h1>Connect 4</h1>
+          <p>Take turns dropping discs. Connect four in any direction to win.</p>
+        </header>
+
+        <section class="c4-game" aria-labelledby="game-status">
+          <p id="game-status" class="c4-status" role="status" aria-live="polite">
+            Red's turn
+          </p>
+
+          <div class="c4-board" id="game-board" role="grid" aria-label="Connect 4 board">
+            <button class="c4-column" type="button" data-column="0" aria-label="Drop a disc in column 1"></button>
+            <button class="c4-column" type="button" data-column="1" aria-label="Drop a disc in column 2"></button>
+            <button class="c4-column" type="button" data-column="2" aria-label="Drop a disc in column 3"></button>
+            <button class="c4-column" type="button" data-column="3" aria-label="Drop a disc in column 4"></button>
+            <button class="c4-column" type="button" data-column="4" aria-label="Drop a disc in column 5"></button>
+            <button class="c4-column" type="button" data-column="5" aria-label="Drop a disc in column 6"></button>
+            <button class="c4-column" type="button" data-column="6" aria-label="Drop a disc in column 7"></button>
+          </div>
+
+          <section
+            class="c4-rematch"
+            id="rematch-panel"
+            aria-label="Rematch options"
+            aria-live="polite"
+            hidden
+          >
+            <button class="c4-rematch-button" id="rematch-button" type="button">
+              Rematch
+            </button>
+          </section>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <nav aria-label="Footer navigation">
+          <a href="/privacy/">Privacy policy</a>
+          <a href="/about/">About</a>
+          <a href="/tip/">☕Tip</a>
+        </nav>
+        <p>© 2027 Catvan Studio. All rights reserved.</p>
+      </footer>
+    </div>
+
+    <script src="game.js?v=1"></script>
+  </body>
+</html>
