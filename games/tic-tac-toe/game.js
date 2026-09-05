@@ -447,7 +447,7 @@ function configureDataChannel(channel, generation) {
     if (generation !== connectionGeneration) return;
     peerConnected = true;
     movePending = false;
-    connectionStatus.textContent = "Connected — you are " + myPlayer + ".";
+    connectionStatus.textContent = "Connected";
     renderBoard();
     if (myPlayer === "X") sendState();
   };
@@ -469,7 +469,7 @@ function useCloudflareRelay() {
   transportMode = "relay";
   peerConnected = true;
   movePending = false;
-  connectionStatus.textContent = "Connected — you are " + myPlayer + ".";
+  connectionStatus.textContent = "Connected";
   renderBoard();
   if (myPlayer === "X") sendState();
 }
