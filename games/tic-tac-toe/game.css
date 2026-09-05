@@ -1,5 +1,5 @@
 .ttt-page {
-  width: min(680px, calc(100% - 3rem));
+  width: min(780px, calc(100% - 3rem));
   margin: 0 auto;
   padding: 3rem 0 clamp(6rem, 12vw, 9rem);
 }
