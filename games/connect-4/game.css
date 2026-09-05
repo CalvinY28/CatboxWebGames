@@ -147,8 +147,8 @@
 }
 
 .c4-cell.is-win {
-  border-color: #8ae35d;
-  animation: c4-winning-disc 700ms ease-in-out infinite alternate;
+  border-color: #343434;
+  animation: c4-winning-disc 950ms ease-in-out infinite alternate;
 }
 
 @keyframes c4-disc-drop {
@@ -165,7 +165,7 @@
 
 @keyframes c4-winning-disc {
   to {
-    transform: scale(0.75);
+    transform: scale(0.9);
   }
 }
 
