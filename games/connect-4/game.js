@@ -50,6 +50,7 @@ let pendingIceCandidates = [];
 let iceServersPromise = Promise.resolve(fallbackIceServers);
 let connectionGeneration = 0;
 let transportMode = "pending";
+let connectionFallbackTimer = null;
 
 function createBoard() {
   return Array.from({ length: ROWS }, function () {
@@ -339,6 +340,10 @@ function closePeerConnection() {
   clearRematchAgreement();
   pendingIceCandidates = [];
   transportMode = "pending";
+  if (connectionFallbackTimer) {
+    window.clearTimeout(connectionFallbackTimer);
+    connectionFallbackTimer = null;
+  }
   if (dataChannel) {
     dataChannel.onopen = null;
     dataChannel.onclose = null;
@@ -564,6 +569,18 @@ function requestCloudflareRelay() {
   useCloudflareRelay();
 }
 
+function scheduleConnectionFallback(generation) {
+  if (connectionFallbackTimer) window.clearTimeout(connectionFallbackTimer);
+  connectionFallbackTimer = window.setTimeout(function () {
+    connectionFallbackTimer = null;
+    if (
+      generation === connectionGeneration
+      && !peerConnected
+      && transportMode === "webrtc"
+    ) requestCloudflareRelay();
+  }, 8000);
+}
+
 async function createPeerConnection(generation) {
   if (!webRtcSupported) return null;
   if (peerConnection) closePeerConnection();
@@ -618,6 +635,7 @@ async function startOffer(generation) {
   const offer = await connection.createOffer();
   await connection.setLocalDescription(offer);
   sendSignal("offer", serializeSessionDescription(connection.localDescription));
+  scheduleConnectionFallback(generation);
 }
 
 async function acceptOffer(offer, generation) {
@@ -633,6 +651,7 @@ async function acceptOffer(offer, generation) {
   const answer = await connection.createAnswer();
   await connection.setLocalDescription(answer);
   sendSignal("answer", serializeSessionDescription(connection.localDescription));
+  scheduleConnectionFallback(generation);
 }
 
 async function acceptAnswer(answer, generation) {
