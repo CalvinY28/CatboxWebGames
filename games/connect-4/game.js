@@ -539,7 +539,7 @@ function configureDataChannel(channel, generation) {
     if (generation !== connectionGeneration) return;
     peerConnected = true;
     movePending = false;
-    connectionStatus.textContent = "Connected — you are " + playerName(myPlayer) + ".";
+    connectionStatus.textContent = "Connected";
     renderBoard();
     if (myPlayer === RED) sendState();
   };
@@ -559,7 +559,7 @@ function useCloudflareRelay() {
   transportMode = "relay";
   peerConnected = true;
   movePending = false;
-  connectionStatus.textContent = "Connected — you are " + playerName(myPlayer) + ".";
+  connectionStatus.textContent = "Connected";
   renderBoard();
   if (myPlayer === RED) sendState();
 }
@@ -618,7 +618,7 @@ async function addPendingIceCandidates() {
     try {
       await peerConnection.addIceCandidate(candidate);
     } catch (error) {
-      // Ignore a stale candidate from a previous negotiation.
+
     }
   }
 }
