@@ -130,7 +130,10 @@ a:focus-visible {
 .game-slot-purple { background: #ad95e8; }
 
 .game-slot-wip {
-  background-image: url("assets/WIP_placeholder.gif?v=3");
+  background-image: url("assets/WIP_placeholder.gif?v=4");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .closing-note {
