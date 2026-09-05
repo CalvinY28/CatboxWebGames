@@ -147,26 +147,26 @@
 }
 
 .c4-cell.is-win {
-  border-color: #171717;
-  box-shadow: 0 0 0 3px #fff, 0 0 0 6px #171717;
+  border-color: #fff;
+  box-shadow: 0 0 0 6px #fff;
   animation: c4-winning-disc 700ms ease-in-out infinite alternate;
 }
 
 @keyframes c4-disc-drop {
   from {
-    opacity: 0.5;
-    transform: translateY(-320%) scale(0.86);
+    opacity: 0.25;
+    transform: scale(0.25);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: scale(1);
   }
 }
 
 @keyframes c4-winning-disc {
   to {
-    transform: scale(0.88);
+    transform: scale(0.99);
   }
 }
 
